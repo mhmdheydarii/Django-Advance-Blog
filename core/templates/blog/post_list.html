@@ -10,7 +10,7 @@
         <h1>hi from list post</h1>
         {% for post in posts %}
         
-        <a href="{% url 'blog:post-detail' pk=post.id %}"><p>{{post.id}} - {{post}}</p></a>
+        <a href="{% url 'blog:post-detail' pk=post.id %}"><p>{{post.id}} - {{post}} </p></a>
         <a href="{% url 'blog:post-update' pk=post.id %}">
             <h5>Edit</h5>
         </a>

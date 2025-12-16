@@ -6,6 +6,7 @@ from django.shortcuts import get_object_or_404
 from django.views.generic import ListView, DetailView, FormView, CreateView, UpdateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin
 
+
 # Create your views here.
 
 """
@@ -42,6 +43,8 @@ class ListPost(ListView):
 
 class DetailPostView(DetailView):
     model = Post
+    
+    
 
 '''
 class CreatePostView(FormView):
@@ -73,3 +76,5 @@ class PostUpdateView(UpdateView):
 class PostDeleteView(LoginRequiredMixin, DeleteView):
     model = Post
     success_url = '/blog/post/'
+
+
