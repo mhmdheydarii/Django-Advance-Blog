@@ -1,6 +1,6 @@
 from rest_framework.response import Response 
-from .serializers import PostSerializer
-from blog.models import Post
+from .serializers import PostSerializer, CategorySerializer
+from blog.models import Post, Category
 from rest_framework import status
 from django.shortcuts import get_object_or_404
 from rest_framework.decorators import permission_classes
@@ -96,42 +96,58 @@ class PostDetail(RetrieveUpdateDestroyAPIView):
     queryset = Post.objects.filter(status=True)
 '''
 
-class PostViewSet(viewsets.ViewSet):
+''' Example for ViewSet in Class Base View 
+
+class PostViewSet(viewsets.Viewset):
 
     permission_classes = [IsAdminUser]
     serializer_class = PostSerializer
     queryset = Post.objects.filter(status=True)
 
-    def list(self, request):
-        serializer = self.serializer_class(self.queryset, many=True)
-        return Response(serializer.data)
+    # def list(self, request):
+    #     posts = Post.objects.filter(status=True)
+    #     serializer = PostSerializer(posts, many=True)
+    #     return Response(serializer.data)
     
-    def create(self, request):
-        serializer = PostSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(serializer.data)
+    # def create(self, request):
+    #     serializer = PostSerializer(data=request.data)
+    #     serializer.is_valid(raise_exception=True)
+    #     serializer.save()
+    #     return Response(serializer.data)
     
-    def retrive(self, request, pk=None):
-        post_object = get_object_or_404(Post, pk=pk, status=True)
-        serializer = self.serializer_class(post_object)
-        return Response(serializer.data)
+    # def retrive(self, request, pk=None):
+    #     post_object = get_object_or_404(Post, pk=pk, status=True)
+    #     serializer = self.serializer_class(post_object)
+    #     return Response(serializer.data)
     
-    def update(self, request, pk=None):
-        post = get_object_or_404(Post, status=True, pk=pk)
-        serializer = self.serializer_class(post, data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(serializer.data)
+    # def update(self, request, pk=None):
+    #     post = get_object_or_404(Post, status=True, pk=pk)
+    #     serializer = self.serializer_class(post, data=request.data)
+    #     serializer.is_valid(raise_exception=True)
+    #     serializer.save()
+    #     return Response(serializer.data)
 
-    def partial_update(self, request, pk=None):
-        post = get_object_or_404(Post, status=True, pk=pk)
-        serializer = PostSerializer(post, data=request.data, partial=True)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(serializer.data)
+    # def partial_update(self, request, pk=None):
+    #     post = get_object_or_404(Post, status=True, pk=pk)
+    #     serializer = PostSerializer(post, data=request.data, partial=True)
+    #     serializer.is_valid(raise_exception=True)
+    #     serializer.save()
+    #     return Response(serializer.data)
 
-    def destroy(self, request, pk=None):
-        post = Post.objects.filter(status=True, pk=pk)
-        post.delete()
-        return Response({'detail':'item removed succesfully'}, status=status.HTTP_204_NO_CONTENT)
+    # def destroy(self, request, pk=None):
+    #     post = Post.objects.filter(status=True, pk=pk)
+    #     post.delete()
+    #     return Response({'detail':'item removed succesfully'}, status=status.HTTP_204_NO_CONTENT)
+'''
+
+
+class PostViewSet(viewsets.ModelViewSet):
+
+    permission_classes = [IsAdminUser]
+    serializer_class = PostSerializer
+    queryset = Post.objects.filter(status=True)
+
+class CategoryViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticatedOrReadOnly]
+    serializer_class = CategorySerializer
+    queryset = Category.objects.all()
