@@ -9,6 +9,10 @@ from rest_framework.views import APIView
 from rest_framework.mixins import ListModelMixin
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
 from rest_framework import viewsets
+from .permissions import IsOwnerOrReadOnly
+from django_filters.rest_framework import DjangoFilterBackend, OrderingFilter
+from rest_framework import filters
+from .paginations import DefaultPaginations
 
 ''' Example for apiview in function base view 
 # from rest_framework.decorators import api_view
@@ -143,9 +147,14 @@ class PostViewSet(viewsets.Viewset):
 
 class PostViewSet(viewsets.ModelViewSet):
 
-    permission_classes = [IsAdminUser]
+    permission_classes = [IsOwnerOrReadOnly]
     serializer_class = PostSerializer
     queryset = Post.objects.filter(status=True)
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
+    filterset_fields = {'category':['exact', 'in'], 'author':['exact','in']}
+    search_fields = ['title', 'content']
+    ordering_fields = ['published_date']
+    pagination_class = DefaultPaginations
 
 class CategoryViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticatedOrReadOnly]
