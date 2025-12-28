@@ -5,7 +5,7 @@ from django.contrib.auth.password_validation import validate_password
 from django.contrib.auth import authenticate
 from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
-
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer 
 
 
 class RegistrationsSerializers(serializers.ModelSerializer):
@@ -75,3 +75,15 @@ class CustomAuthTokenSerializer(serializers.Serializer):
 
         attrs['user'] = user
         return attrs
+
+
+
+# Custom JWT to include email and user ID
+class CustomTokenObtaiPairSerializer(TokenObtainPairSerializer):
+
+    def validate(self, attrs):
+        validated_data = super().validate(attrs)
+        validated_data['email'] = self.user.email
+        validated_data['user_id'] = self.user.id
+
+        return validated_data
