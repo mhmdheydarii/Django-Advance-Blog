@@ -20,5 +20,8 @@ urlpatterns = [
     # Login & logout with JWT
     path('jwt/login/', views.CustomTokenObtainPairView.as_view(), name='jwt-login'),
     path('jwt/refresh/', TokenRefreshView.as_view(), name='jwt-refresh'),
-    path('jwt/verify/', TokenVerifyView.as_view(), name='jwt-verify')
+    path('jwt/verify/', TokenVerifyView.as_view(), name='jwt-verify'),
+
+    # Change password
+    path('change-password/', views.ChangePasswordApiView.as_view(), name='change-password')
 ]
