@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from accounts.models import User
+from accounts.models import User, Profile
 from django.core import exceptions
 from django.contrib.auth.password_validation import validate_password
 from django.contrib.auth import authenticate
@@ -32,8 +32,12 @@ class RegistrationsSerializers(serializers.ModelSerializer):
 
     # Create user without password 1
     def create(self, validated_data):
-        validated_data.pop('password1', None)
-        return super().create(**validated_data)
+        password = validated_data.pop('password1', None)
+        user = self.Meta.model(**validated_data)
+        user.set_password(password)
+        user.save()
+
+        return user
 
 
 
@@ -107,3 +111,13 @@ class ChangePasswordSerializer(serializers.Serializer):
             raise serializers.ValidationError({'password':list(e.messages)})
 
         return super().validate(attrs)
+    
+
+
+class ProfileSerializer(serializers.ModelSerializer):
+
+    email = serializers.CharField(source='user.email', read_only=True)
+
+    class Meta:
+        model = Profile
+        fields = ['email', 'first_name', 'last_name', 'image', 'description']
