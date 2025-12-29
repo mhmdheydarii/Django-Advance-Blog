@@ -5,13 +5,13 @@ from .models import User, Profile
 
 class CustomUserAdmin(UserAdmin):
     model = User
-    list_display = ('email', 'is_staff', 'is_active')
+    list_display = ('email', 'is_staff', 'is_active', 'is_verified')
     ordering = ('created_date',)
     search_fields = ('email',)
 
     fieldsets = (
         ("Authentication", {"fields": ("email", "password")}),
-        ("Permissions", {"fields": ("is_staff","is_superuser" ,"is_active")}),
+        ("Permissions", {"fields": ("is_staff","is_superuser" ,"is_active", "is_verified")}),
         ("Groupe Permissions", {"fields": ("groups", "user_permissions")}),
         ("Important Date", {"fields": ("last_login",)})
     )
@@ -21,7 +21,7 @@ class CustomUserAdmin(UserAdmin):
             "classes": ("wide",),
             "fields": (
                 "email", "password1", "password2", "is_staff",
-                "is_active"
+                "is_active", 'is_verified'
             )}
         ),
     )
