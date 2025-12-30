@@ -27,4 +27,7 @@ urlpatterns = [
 
     # Profile
     path('profile/', views.PrifileApiView.as_view(), name='profile'),
+
+    # Verification
+    path('verify/', views.SentEmailView.as_view(), name='sent-email')
 ]
