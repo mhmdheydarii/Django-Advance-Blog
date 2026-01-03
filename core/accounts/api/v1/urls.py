@@ -26,8 +26,14 @@ urlpatterns = [
     path('change-password/', views.ChangePasswordApiView.as_view(), name='change-password'),
 
     # Profile
-    path('profile/', views.PrifileApiView.as_view(), name='profile'),
+    path('profile/', views.ProfileApiView.as_view(), name='profile'),
 
     # Verification
-    path('verify/', views.SentEmailView.as_view(), name='sent-email')
+    path('verify/', views.SentEmailView.as_view(), name='sent-email'),
+
+    # verify
+    path('activation/confrim/<str:token>', views.VerifyViewToken.as_view(), name='verify'),
+
+    # resend verify token
+    path('resend/verify/', views.ResendVerifyApiView.as_view(), name='resend-verification'),
 ]

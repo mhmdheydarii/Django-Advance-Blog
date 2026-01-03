@@ -1,7 +1,7 @@
 from rest_framework import generics
 from .serializers import (RegistrationsSerializers, CustomAuthTokenSerializer,
                         CustomTokenObtaiPairSerializer, ChangePasswordSerializer,
-                        ProfileSerializer)
+                        ProfileSerializer, ResendActivationSerializer)
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.authtoken.models import Token
@@ -11,7 +11,11 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.views import TokenObtainPairView
 from accounts.models import User, Profile
 from django.shortcuts import get_object_or_404
-from django.core.mail import send_mail
+from mail_templated import send_mail
+from rest_framework_simplejwt.tokens import RefreshToken
+import jwt
+from jwt.exceptions import ExpiredSignatureError, InvalidSignatureError, DecodeError
+from django.conf import settings
 
 class RegistrationApiView(generics.GenericAPIView):
 
@@ -21,12 +25,20 @@ class RegistrationApiView(generics.GenericAPIView):
         serializers = RegistrationsSerializers(data=request.data)
         if serializers.is_valid():
             serializers.save()
+            email = serializers.validated_data['email']
             data = {
-                'email':serializers.validated_data['email']
+                'email': email
             }
+            user_obj = get_object_or_404(User, email=email)
+            token = self.get_tokens_for_user(user_obj)
+            send_mail('email/activation-email.tpl', {'token':token}, 'mohammad@gmail.com', [email])
             return Response(data, status=status.HTTP_201_CREATED)
         return Response(serializers.errors, status=status.HTTP_400_BAD_REQUEST)
     
+    def get_tokens_for_user(self, user):
+        refresh = RefreshToken.for_user(user)
+        return str(refresh.access_token)
+
 
 class CustomObtainAuthToken(ObtainAuthToken):
 
@@ -55,12 +67,12 @@ class CustomDiscardAuthToken(APIView):
 
 
 
-# JWT
+# Custom JWT token 
 class CustomTokenObtainPairView(TokenObtainPairView):
 
     serializer_class = CustomTokenObtaiPairSerializer
 
-
+# Changing the password of account 
 class ChangePasswordApiView(generics.GenericAPIView):
 
     model = User
@@ -87,8 +99,8 @@ class ChangePasswordApiView(generics.GenericAPIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-
-class PrifileApiView(generics.RetrieveUpdateAPIView):
+# Updating Profile account
+class ProfileApiView(generics.RetrieveUpdateAPIView):
 
     serializer_class = ProfileSerializer
     queryset = Profile.objects.all()
@@ -98,15 +110,54 @@ class PrifileApiView(generics.RetrieveUpdateAPIView):
         obj = get_object_or_404(queryset, user=self.request.user)
         return obj
     
-
+# sent verification email for user
 class SentEmailView(generics.GenericAPIView):
 
-    def post(self, request, *args, **kwargs):
-        send_mail(
-            "Subject here",
-            "Here is the message.",
-            "from@example.com",
-            ["to@example.com"],
-            fail_silently=False,
-        )
+    def get(self, request, *args, **kwargs):
+        self.email = 'raha@gmail.com'
+        user_obj = get_object_or_404(User, email=self.email)
+        token = self.get_tokens_for_user(user_obj)
+        send_mail('email/hello.tpl', {'token':token}, 'mohammad@gmail.com', [self.email])
         return Response({'email sent'})
+    
+    def get_tokens_for_user(self, user):
+        refresh = RefreshToken.for_user(user)
+        return str(refresh.access_token)
+
+class VerifyViewToken(APIView):
+
+    def get(self, request, token, *args, **kwargs):
+        try:
+            token = jwt.decode(token, settings.SECRET_KEY, algorithms=['HS256'])
+            user_id = token.get('user_id')
+        except ExpiredSignatureError:
+            return Response({'detail':'ExpiredSignatureError'})
+        except InvalidSignatureError:
+            return Response({'detail':'invalid error'})
+        except DecodeError:
+            return Response({'detail': 'DecodeError'})
+        
+        user_obj = User.objects.get(pk = user_id)
+        if user_obj.is_verified:
+            return Response({"detail": "Your account has already been verified"})
+        user_obj.is_verified = True
+        user_obj.save()
+        return Response({"detail": "your account verified successfully"})
+    
+
+class ResendVerifyApiView(generics.GenericAPIView):
+
+    serializer_class = ResendActivationSerializer
+
+    def post(self, request, *args, **kwargs):
+        serializer = ResendActivationSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user_obj = serializer.validated_data['user']
+        token = self.get_tokens_for_user(user_obj)
+        send_mail('email/activation-email.tpl', {'token':token}, 'mohammad@gmail.com', [user_obj.email])
+        return Response({"detail": "User activation resend successfully"})
+        
+        
+    def get_tokens_for_user(self, user):
+        refresh = RefreshToken.for_user(user)
+        return str(refresh.access_token)

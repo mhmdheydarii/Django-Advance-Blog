@@ -42,9 +42,12 @@ INSTALLED_APPS = [
     'blog',
     'django_filters',
     'rest_framework',
+    'djoser',
     'drf_yasg',
     'rest_framework.authtoken',
     'rest_framework_simplejwt',
+    'mail_templated',
+    
 ]
 
 MIDDLEWARE = [
