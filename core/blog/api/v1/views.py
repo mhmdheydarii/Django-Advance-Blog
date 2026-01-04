@@ -1,10 +1,14 @@
-from rest_framework.response import Response 
+from rest_framework.response import Response
 from .serializers import PostSerializer, CategorySerializer
 from blog.models import Post, Category
 from rest_framework import status
 from django.shortcuts import get_object_or_404
 from rest_framework.decorators import permission_classes
-from rest_framework.permissions import IsAuthenticated, IsAdminUser, IsAuthenticatedOrReadOnly
+from rest_framework.permissions import (
+    IsAuthenticated,
+    IsAdminUser,
+    IsAuthenticatedOrReadOnly,
+)
 from rest_framework.views import APIView
 from rest_framework.mixins import ListModelMixin
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
@@ -14,7 +18,7 @@ from django_filters.rest_framework import DjangoFilterBackend, OrderingFilter
 from rest_framework import filters
 from .paginations import DefaultPaginations
 
-''' Example for apiview in function base view 
+""" Example for apiview in function base view 
 # from rest_framework.decorators import api_view
 # @api_view(["GET", "POST"])
 # @permission_classes([IsAuthenticatedOrReadOnly])
@@ -43,7 +47,7 @@ from .paginations import DefaultPaginations
 #     elif request.method == "DELETE":
 #         post.delete()
 #         return Response({"detail":"this item temoved succesfully"}, status=status.HTTP_204_NO_CONTENT)
-'''
+"""
 
 ''' Example for ApiView in Class Base View 
 
@@ -86,7 +90,7 @@ from .paginations import DefaultPaginations
 #         return Response({"detail":"this item temoved succesfully"}, status=status.HTTP_204_NO_CONTENT)
 '''
 
-''' Example for GenericApiView in Class Base View  
+""" Example for GenericApiView in Class Base View  
 
 class PostList(ListCreateAPIView):
 
@@ -98,9 +102,9 @@ class PostDetail(RetrieveUpdateDestroyAPIView):
     permission_classes = [IsAdminUser]
     serializer_class = PostSerializer
     queryset = Post.objects.filter(status=True)
-'''
+"""
 
-''' Example for ViewSet in Class Base View 
+""" Example for ViewSet in Class Base View 
 
 class PostViewSet(viewsets.Viewset):
 
@@ -142,7 +146,7 @@ class PostViewSet(viewsets.Viewset):
     #     post = Post.objects.filter(status=True, pk=pk)
     #     post.delete()
     #     return Response({'detail':'item removed succesfully'}, status=status.HTTP_204_NO_CONTENT)
-'''
+"""
 
 
 class PostViewSet(viewsets.ModelViewSet):
@@ -150,11 +154,16 @@ class PostViewSet(viewsets.ModelViewSet):
     permission_classes = [IsOwnerOrReadOnly]
     serializer_class = PostSerializer
     queryset = Post.objects.filter(status=True)
-    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
-    filterset_fields = {'category':['exact', 'in'], 'author':['exact','in']}
-    search_fields = ['title', 'content']
-    ordering_fields = ['published_date']
+    filter_backends = [
+        DjangoFilterBackend,
+        filters.SearchFilter,
+        filters.OrderingFilter,
+    ]
+    filterset_fields = {"category": ["exact", "in"], "author": ["exact", "in"]}
+    search_fields = ["title", "content"]
+    ordering_fields = ["published_date"]
     pagination_class = DefaultPaginations
+
 
 class CategoryViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticatedOrReadOnly]

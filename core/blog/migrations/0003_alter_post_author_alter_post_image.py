@@ -7,19 +7,21 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('accounts', '0004_alter_profile_image'),
-        ('blog', '0002_alter_post_published_date'),
+        ("accounts", "0004_alter_profile_image"),
+        ("blog", "0002_alter_post_published_date"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='post',
-            name='author',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='accounts.profile'),
+            model_name="post",
+            name="author",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, to="accounts.profile"
+            ),
         ),
         migrations.AlterField(
-            model_name='post',
-            name='image',
-            field=models.ImageField(blank=True, null=True, upload_to='Posts/'),
+            model_name="post",
+            name="image",
+            field=models.ImageField(blank=True, null=True, upload_to="Posts/"),
         ),
     ]
