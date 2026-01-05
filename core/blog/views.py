@@ -85,3 +85,5 @@ class PostUpdateView(UpdateView):
 class PostDeleteView(LoginRequiredMixin, DeleteView):
     model = Post
     success_url = "/blog/post/"
+
+
