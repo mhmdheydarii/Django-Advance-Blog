@@ -53,6 +53,8 @@ class ListPost(ListView):
 class DetailPostView(DetailView):
     model = Post
 
+class ListPostApi(TemplateView):
+    template_name = 'blog/listpost-api.html'
 
 """
 class CreatePostView(FormView):

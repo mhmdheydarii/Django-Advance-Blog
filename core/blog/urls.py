@@ -12,6 +12,7 @@ urlpatterns = [
     ),
     path("post/", views.ListPost.as_view(), name="listpost"),
     path("post/<int:pk>/", views.DetailPostView.as_view(), name="post-detail"),
+    path("post/api/", views.ListPostApi.as_view(), name="listpost-api"),
     # path('post/create/', views.CreatePostView.as_view(), name='create-post')
     path("post/create/", views.PostCreateView.as_view(), name="post-create"),
     path("post/<int:pk>/edit/", views.PostUpdateView.as_view(), name="post-update"),
