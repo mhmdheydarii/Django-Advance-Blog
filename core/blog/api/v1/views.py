@@ -151,7 +151,7 @@ class PostViewSet(viewsets.Viewset):
 
 class PostViewSet(viewsets.ModelViewSet):
 
-    permission_classes = [IsOwnerOrReadOnly]
+    permission_classes = [IsAuthenticated]
     serializer_class = PostSerializer
     queryset = Post.objects.filter(status=True)
     filter_backends = [
@@ -166,6 +166,6 @@ class PostViewSet(viewsets.ModelViewSet):
 
 
 class CategoryViewSet(viewsets.ModelViewSet):
-    permission_classes = [IsAuthenticatedOrReadOnly]
+    permission_classes = [IsAuthenticated]
     serializer_class = CategorySerializer
     queryset = Category.objects.all()
