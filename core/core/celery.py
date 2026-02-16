@@ -1,5 +1,5 @@
 import os
-
+from accounts.tasks import send_email
 from celery import Celery
 
 # Set the default Django settings module for the 'celery' program.
