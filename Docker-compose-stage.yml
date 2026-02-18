@@ -12,21 +12,23 @@ services:
     container_name: backend
     volumes:
       - ./core:/app
-    command: python manage.py makemigrations && python manage.py migrate && python manage.py collectstatic && gunicorn core.wsgi:application --bind 0.0.0.0:8000
-    ports:
-      - "8000:8000"
+    command: gunicorn core.wsgi:application --bind 0.0.0.0:8000
+    expose:
+      - "8000"
     environment:
       - SECRET_KEY=test
       - DEBUG=False
     depends_on:
       - redis
 
-  worker:
-    build: .
-    container_name: worker
+  nginx:
+    image: nginx
+    container_name: nginx
+    ports:
+      - "80:80"
     volumes:
-      - ./core/:/app
-    command: celery -A core worker --loglevel=info
+      - ./default.conf:/etc/nginx/conf.d/default.conf
+    restart: always
     depends_on:
       - redis
       - backend
