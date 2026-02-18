@@ -9,6 +9,6 @@ def send_email(request):
     return HttpResponse("<h1> Email is being sent </h1>")
 
 
-def test(request):
+def testCache(request):
     response = requests.get()
     return JsonResponse(response)

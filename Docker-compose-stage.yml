@@ -1,0 +1,32 @@
+services:
+  redis:
+    container_name: redis
+    image: redis
+    restart: always
+    ports:
+      - "6379:6379"
+    command: redis-server --save 60 1 --loglevel warning
+
+  backend:
+    build: .
+    container_name: backend
+    volumes:
+      - ./core:/app
+    command: python manage.py makemigrations && python manage.py migrate && python manage.py collectstatic && gunicorn core.wsgi:application --bind 0.0.0.0:8000
+    ports:
+      - "8000:8000"
+    environment:
+      - SECRET_KEY=test
+      - DEBUG=False
+    depends_on:
+      - redis
+
+  worker:
+    build: .
+    container_name: worker
+    volumes:
+      - ./core/:/app
+    command: celery -A core worker --loglevel=info
+    depends_on:
+      - redis
+      - backend

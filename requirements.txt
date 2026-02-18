@@ -32,3 +32,5 @@ django-cors-headers
 celery
 redis
 djoser
+gunicorn
+django_celery_beat
