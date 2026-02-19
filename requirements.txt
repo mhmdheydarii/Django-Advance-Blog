@@ -34,3 +34,4 @@ redis
 djoser
 gunicorn
 django_celery_beat
+psycopg2-binary
